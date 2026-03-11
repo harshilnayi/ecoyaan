@@ -3,7 +3,7 @@
 Welcome to the **Ecoyaan Checkout Flow** project! This is a simplified, responsive checkout experience built as a frontend engineering assignment for Ecoyaan. It is a 2-page flow (Cart -> Shipping -> Payment/Success) that showcases modern tooling, clean architecture, and a premium "eco-friendly" UI/UX.
 
 ## Live Demo
-> **[Insert Vercel Link Here]**
+> **[https://ecoyaan-checkout-eosin.vercel.app](https://ecoyaan-checkout-eosin.vercel.app)**
 
 ## Tech Stack
 This project leverages a modern React ecosystem to ensure fast load times, excellent developer experience, and solid typed architectures:
