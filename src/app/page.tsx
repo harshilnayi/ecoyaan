@@ -1,65 +1,118 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Trash2 } from "lucide-react";
+import { CartItem } from "@/store/checkoutStore";
+import CartInitializer from "@/components/CartInitializer";
 
-export default function Home() {
+async function getCartData() {
+  // Mock data as requested in the assignment
+  const data = {
+    cartItems: [
+      {
+        product_id: 101,
+        product_name: "Bamboo Toothbrush (Pack of 4)",
+        product_price: 299,
+        quantity: 2,
+        image: "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&q=80&w=2940&ixlib=rb-4.0.3",
+      },
+      {
+        product_id: 102,
+        product_name: "Reusable Cotton Produce Bags",
+        product_price: 450,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1610419993549-74d7df6dbab4?auto=format&fit=crop&q=80&w=2692&ixlib=rb-4.0.3",
+      }
+    ],
+    shipping_fee: 50,
+    discount_applied: 0
+  };
+
+  return data;
+}
+
+export default async function CartPage() {
+  const data = await getCartData();
+  
+  const subtotal = data.cartItems.reduce((acc, item) => acc + (item.product_price * item.quantity), 0);
+  const grandTotal = subtotal + data.shipping_fee - data.discount_applied;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="container mx-auto px-4 py-8 lg:py-12 max-w-6xl flex-grow animate-in fade-in duration-500">
+      <CartInitializer items={data.cartItems as CartItem[]} fee={data.shipping_fee} discount={data.discount_applied} />
+
+      <h1 className="text-3xl font-bold text-green-900 mb-8">Review Your Cart</h1>
+      
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="lg:w-2/3 space-y-4">
+          {data.cartItems.map((item) => (
+            <div key={item.product_id} className="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center sm:items-start gap-4 transition-transform hover:-translate-y-1 duration-300">
+              <div className="relative w-32 h-32 rounded-xl overflow-hidden shrink-0 shadow-sm border border-green-50">
+                <Image 
+                  src={item.image} 
+                  alt={item.product_name} 
+                  fill 
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex-1 flex flex-col justify-between h-full py-1 text-center sm:text-left w-full">
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-800">{item.product_name}</h3>
+                  <p className="text-gray-500 text-sm mt-1">Quantity: {item.quantity}</p>
+                </div>
+                <div className="flex items-center justify-between mt-4">
+                  <span className="font-bold text-green-700 text-lg">₹{item.product_price}</span>
+                  <button className="text-red-400 hover:text-red-500 p-2 transition-colors rounded-full hover:bg-red-50" aria-label="Remove item">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="lg:w-1/3">
+          <div className="glass-card p-6 rounded-2xl sticky top-24">
+            <h2 className="text-xl font-bold text-green-900 mb-6 border-b border-green-100 pb-4">Order Summary</h2>
+            
+            <div className="space-y-4 text-gray-600">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span className="font-semibold text-gray-800">₹{subtotal}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span className="font-semibold text-gray-800">₹{data.shipping_fee}</span>
+              </div>
+              {data.discount_applied > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Discount</span>
+                  <span>-₹{data.discount_applied}</span>
+                </div>
+              )}
+              
+              <div className="border-t border-green-100 pt-4 mt-4">
+                <div className="flex justify-between items-center text-lg">
+                  <span className="font-bold text-gray-800">Grand Total</span>
+                  <span className="font-bold text-green-700 text-2xl">₹{grandTotal}</span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1 text-right">Inclusive of all taxes</p>
+              </div>
+            </div>
+
+            <Link 
+              href="/checkout"
+              className="mt-8 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02] shadow-lg shadow-green-200"
+            >
+              Proceed to Checkout
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            
+            <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600">
+              <span className="font-medium">🌱 100% Eco-friendly Packaging</span>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
