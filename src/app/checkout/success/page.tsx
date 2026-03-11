@@ -1,7 +1,17 @@
+'use client';
+
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { PartyPopper, ArrowLeft } from 'lucide-react';
+import { useCheckoutStore } from '@/store/checkoutStore';
 
 export default function SuccessPage() {
+  const clearCart = useCheckoutStore((state) => state.clearCart);
+
+  useEffect(() => {
+    clearCart();
+  }, [clearCart]);
+
   return (
     <div className="container mx-auto px-4 py-16 flex-grow flex items-center justify-center">
       <div className="glass-card max-w-md w-full p-8 md:p-12 text-center rounded-3xl animate-in zoom-in-95 duration-700">

@@ -26,8 +26,6 @@ export default function PaymentPage() {
     // Simulate payment processing
     setTimeout(() => {
       router.push('/checkout/success');
-      // Delay clearing cart slightly so the redirection happens without triggering the useEffect early
-      setTimeout(() => clearCart(), 100);
     }, 1500);
   };
 
