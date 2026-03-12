@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -15,8 +16,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ecoyaan Checkout",
-  description: "Sustainable shopping checkout flow.",
+  title: "Ecoyaan — Sustainable Checkout",
+  description: "A premium eco-friendly shopping experience. Shop sustainable products with a smooth, modern checkout flow.",
+  keywords: ["ecoyaan", "sustainable", "eco-friendly", "checkout", "green shopping"],
+  openGraph: {
+    title: "Ecoyaan — Sustainable Checkout",
+    description: "Shop sustainable products with a smooth, modern checkout flow.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${inter.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <Header />
         <main className="flex-grow flex flex-col">
@@ -38,4 +45,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -1,55 +1,109 @@
-# Ecoyaan Checkout Flow
+# 🌱 Ecoyaan Checkout Flow
 
-Welcome to the **Ecoyaan Checkout Flow** project! This is a simplified, responsive checkout experience built as a frontend engineering assignment for Ecoyaan. It is a 2-page flow (Cart -> Shipping -> Payment/Success) that showcases modern tooling, clean architecture, and a premium "eco-friendly" UI/UX.
+A polished, responsive checkout experience built as a frontend engineering assignment for **Ecoyaan**. This project demonstrates proficiency with React, Next.js SSR, state management, form validation, and premium UI/UX design — going well beyond the MVP requirements.
 
-## Live Demo
+## 🚀 Live Demo
 > **[https://ecoyaan-checkout-eosin.vercel.app](https://ecoyaan-checkout-eosin.vercel.app)**
 
-## Tech Stack
-This project leverages a modern React ecosystem to ensure fast load times, excellent developer experience, and solid typed architectures:
+## 📸 Flow Overview
+**Cart** → **Shipping** → **Payment** → **Success**
 
-- **Framework:** Next.js 15 (App Router)
-- **Language:** TypeScript 
-- **Styling:** Tailwind CSS (Customized with eco-friendly utility classes and CSS variables)
-- **State Management:** Zustand (Persisted client-side state for cart and shipping info)
-- **Form Handling:** React Hook Form + Zod (For robust validation)
-- **Icons:** Lucide-React
+A 4-screen checkout flow with animated step progress indicator, eco-impact tracking, coupon codes, payment method selection, and confetti-powered success celebration.
 
-## Features
+---
 
-- **Store Data Fetching:** Demonstrates fetching mock cart data asynchronously via SSR in the root `page.tsx`. A custom `CartInitializer` client component cleanly synchronizes this server data into the global Zustand store.
-- **Form Validation:** The Shipping Address screen (`/checkout`) implements strict real-time validation (e.g., 10-digit phone numbers, required fields, and valid emails).
-- **State Persistence:** Shipping information and cart updates are persisted across the navigation flow, so users don't lose data if they refresh midway.
-- **Responsive & Premium UI:** Thoughtfully designed with "glassmorphism", subtle micro-transitions (`hover:-translate-y-1`), and a nature-inspired color palette to match Ecoyaan's brand.
+## 🛠️ Tech Stack
 
-## Local Development
+| Technology | Purpose |
+|---|---|
+| **Next.js 16** (App Router) | Framework with SSR data fetching |
+| **TypeScript** | Type-safe development |
+| **Tailwind CSS 4** | Utility-first styling with custom design system |
+| **Zustand** (persisted) | Global state with localStorage persistence |
+| **React Hook Form + Zod** | Form handling with schema validation |
+| **Lucide React** | Icon library |
+| **Inter** (Google Fonts) | Professional e-commerce typography |
 
-If you'd like to run this project locally, follow these steps:
+---
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/ecoyaan.git
-   cd ecoyaan
-   ```
+## ✨ Features
 
-2. **Install dependencies:**
-   Make sure you have Node.js installed, then run:
-   ```bash
-   npm install
-   ```
+### Core Requirements ✅
+- **SSR Data Fetching** — Cart data fetched server-side in the root `page.tsx` and synced to client-side Zustand store via `CartInitializer`
+- **Mock API Route** — `app/api/cart/route.ts` simulates an async backend endpoint
+- **Form Validation** — Strict validation with Zod schemas (10-digit phone, valid email, 6-digit PIN, required fields)
+- **State Persistence** — Zustand `persist` middleware ensures data survives page refreshes across all checkout steps
+- **Responsive Design** — Mobile-first layout with sidebar order summary on desktop
 
-3. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
+### Beyond Requirements 🌟
+- **Eco-Impact Calculator** — Dynamic widget showing trees planted, CO₂ offset, and plastic saved based on order value
+- **Coupon Code System** — Full promo code input with validation (try: `ECO10`, `GREEN20`, `EARTH15`, `NATURE25`)
+- **Interactive Quantity Controls** — +/− buttons to adjust item quantities with real-time total updates
+- **Payment Method Selection** — UPI, Card, COD selection UI (simulated)
+- **Estimated Delivery Date** — 3-5 business day delivery estimate
+- **Payment Processing Animation** — Full-screen overlay with spinner and SSL encryption badge
+- **Confetti Success Animation** — CSS-based confetti with generated order ID and copy button
+- **Step Progress Indicator** — Animated 3-step progress bar across all checkout pages
+- **Trust Signals** — Secure payment, free returns, and eco-packaging badges
+- **Loading Skeleton** — Shimmer animation matching cart layout during SSR load
+- **Premium Glassmorphism** — Custom `glass-card` utility with blur, borders, and shadow effects
+- **Social Share** — Web Share API integration on success page
+- **Hydration-Safe Navigation** — `isHydrated` guard prevents Zustand state race conditions
 
-4. **View the app:**
-   Open [http://localhost:3000](http://localhost:3000) with your browser.
+---
 
-## Architectural Notes
-To ensure the code is humanized, readable, and modular, I avoided complex over-engineering. 
-- **Zustand** was selected over Redux or Context API because it avoids provider wrappers and boilerplate, resulting in much cleaner component trees.
-- I utilized **Tailwind configuration in `globals.css`** to create a single source of truth for the brand colors `(--color-green-*)`, keeping the component classes semantic.
-- The mock API is located in `app/api/cart/route.ts` to simulate a real-world asynchronous backend call over simple static JSON imports.
+## 🏗️ Architecture
 
-If you have any questions about the code or architecture, feel free to reach out. Thank you for the opportunity! 🌱
+```
+src/
+├── app/
+│   ├── api/cart/route.ts        # Mock API endpoint (SSR data source)
+│   ├── checkout/
+│   │   ├── page.tsx             # Shipping form (client-side, validated)
+│   │   ├── payment/page.tsx     # Payment + order confirmation
+│   │   └── success/page.tsx     # Order success with confetti
+│   ├── globals.css              # Design system (animations, utilities)
+│   ├── layout.tsx               # Root layout (Inter font, SEO, Header/Footer)
+│   ├── loading.tsx              # Loading skeleton for Suspense
+│   └── page.tsx                 # Cart page (SSR)
+├── components/
+│   ├── CartActions.tsx           # Quantity controls (+/−/remove)
+│   ├── CartInitializer.tsx       # SSR → Client state bridge
+│   ├── CheckoutProgress.tsx      # 3-step progress indicator
+│   ├── CouponInput.tsx           # Promo code input with validation
+│   ├── EcoImpact.tsx             # Environmental impact calculator
+│   ├── Footer.tsx                # Footer with trust badges
+│   ├── Header.tsx                # Sticky header with cart badge
+│   └── LoadingSkeleton.tsx       # Shimmer loading skeleton
+├── lib/utils.ts                  # Utility functions (cn)
+└── store/checkoutStore.ts        # Zustand store (cart, shipping, coupons)
+```
+
+### Key Decisions
+- **Zustand over Redux/Context**: Zero boilerplate, no provider wrappers, persisted state out of the box
+- **`isHydrated` pattern**: Prevents redirect race conditions on client-side pages that depend on persisted state
+- **CSS-only animations**: Custom `@keyframes` for confetti, shimmer, and transitions — no extra animation library needed
+- **Data-driven forms**: Shipping fields rendered from a config array for maintainability
+
+---
+
+## 🖥️ Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/harshilnayi/ecoyaan.git
+cd ecoyaan/ecoyaan-checkout
+
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Open http://localhost:3000
+```
+
+---
+
+## 📄 License
+Built with 💚 for Ecoyaan by [Harshil Nayi](https://github.com/harshilnayi).
