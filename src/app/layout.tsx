@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -16,11 +16,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ecoyaan — Sustainable Checkout",
+  title: "Ecoyaan - Sustainable Checkout",
   description: "A premium eco-friendly shopping experience. Shop sustainable products with a smooth, modern checkout flow.",
   keywords: ["ecoyaan", "sustainable", "eco-friendly", "checkout", "green shopping"],
   openGraph: {
-    title: "Ecoyaan — Sustainable Checkout",
+    title: "Ecoyaan - Sustainable Checkout",
     description: "Shop sustainable products with a smooth, modern checkout flow.",
     type: "website",
   },
@@ -33,13 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
-      >
+      <body className={`${inter.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}>
         <Header />
-        <main className="flex-grow flex flex-col">
-          {children}
-        </main>
+        <main className="flex flex-grow flex-col">{children}</main>
         <Footer />
       </body>
     </html>

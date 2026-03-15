@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Leaf, TreePine, Droplets } from 'lucide-react';
+import { Droplets, Leaf, TreePine } from 'lucide-react';
 
 interface EcoImpactProps {
   subtotal: number;
@@ -23,6 +23,7 @@ function AnimatedCounter({ target, duration = 1500 }: { target: number; duration
         setCount(Math.floor(start * 10) / 10);
       }
     }, 16);
+
     return () => clearInterval(timer);
   }, [target, duration]);
 
@@ -32,10 +33,9 @@ function AnimatedCounter({ target, duration = 1500 }: { target: number; duration
 export function EcoImpact({ subtotal, variant = 'card' }: EcoImpactProps) {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Impact calculations based on order value
   const treesPlanted = Math.max(1, Math.round(subtotal / 300));
-  const co2Saved = Math.round(subtotal * 0.02 * 10) / 10; // kg
-  const plasticAvoided = Math.round(subtotal * 0.005 * 10) / 10; // kg
+  const co2Saved = Math.round(subtotal * 0.02 * 10) / 10;
+  const plasticAvoided = Math.round(subtotal * 0.005 * 10) / 10;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 300);
@@ -57,7 +57,7 @@ export function EcoImpact({ subtotal, variant = 'card' }: EcoImpactProps) {
       icon: Leaf,
       value: co2Saved,
       unit: 'kg',
-      label: 'CO₂ offset',
+      label: 'CO2 offset',
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
     },
@@ -73,10 +73,10 @@ export function EcoImpact({ subtotal, variant = 'card' }: EcoImpactProps) {
 
   if (variant === 'inline') {
     return (
-      <div className="flex items-center gap-4 text-sm animate-fadeInUp">
-        {impacts.map((item, i) => (
-          <div key={i} className="flex items-center gap-1.5">
-            <item.icon className={`w-4 h-4 ${item.color}`} />
+      <div className="animate-fadeInUp flex items-center gap-4 text-sm">
+        {impacts.map((item) => (
+          <div key={item.label} className="flex items-center gap-1.5">
+            <item.icon className={`h-4 w-4 ${item.color}`} />
             <span className={`font-bold ${item.color}`}>
               <AnimatedCounter target={item.value} />
             </span>
@@ -88,28 +88,28 @@ export function EcoImpact({ subtotal, variant = 'card' }: EcoImpactProps) {
   }
 
   return (
-    <div className="glass-card rounded-2xl p-5 animate-fadeInUp">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-          <Leaf className="w-4 h-4 text-green-600" />
+    <div className="glass-card animate-fadeInUp rounded-2xl p-5">
+      <div className="mb-4 flex items-center gap-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+          <Leaf className="h-4 w-4 text-green-600" />
         </div>
         <div>
-          <h3 className="font-bold text-green-900 text-sm">Your Eco Impact</h3>
-          <p className="text-xs text-gray-500">Every purchase makes a difference 🌍</p>
+          <h3 className="text-sm font-bold text-green-900">Your Eco Impact</h3>
+          <p className="text-xs text-gray-500">Each order supports measurable sustainability goals.</p>
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-3">
-        {impacts.map((item, i) => (
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {impacts.map((item, index) => (
           <div
-            key={i}
-            className={`${item.bg} rounded-xl p-3 text-center animate-fadeInUp`}
-            style={{ animationDelay: `${i * 150}ms` }}
+            key={item.label}
+            className={`${item.bg} animate-fadeInUp rounded-xl border border-green-100/70 p-3 text-center`}
+            style={{ animationDelay: `${index * 150}ms` }}
           >
-            <item.icon className={`w-5 h-5 mx-auto mb-1.5 ${item.color}`} />
+            <item.icon className={`mx-auto mb-1.5 h-5 w-5 ${item.color}`} />
             <div className={`text-xl font-bold ${item.color}`}>
-              <AnimatedCounter target={item.value} duration={1500 + i * 300} />
+              <AnimatedCounter target={item.value} duration={1500 + index * 300} />
             </div>
-            <div className="text-[10px] text-gray-500 mt-0.5 leading-tight">
+            <div className="mt-0.5 text-[10px] leading-tight text-gray-500">
               {item.unit} {item.label}
             </div>
           </div>

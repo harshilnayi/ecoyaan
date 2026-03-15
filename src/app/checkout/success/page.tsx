@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { PartyPopper, ArrowLeft, Package, Calendar, Share2, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, Check, Copy, Package, PartyPopper, Share2 } from 'lucide-react';
 import { useCheckoutStore } from '@/store/checkoutStore';
 import { EcoImpact } from '@/components/EcoImpact';
 
@@ -17,7 +17,6 @@ interface ConfettiPieceData {
 
 function createConfettiPieces() {
   const colors = ['#22c55e', '#16a34a', '#4ade80', '#86efac', '#fbbf24', '#f59e0b', '#34d399', '#10b981'];
-
   return Array.from({ length: 40 }, (_, index) => ({
     id: index,
     delay: Math.random() * 0.5,
@@ -31,7 +30,7 @@ function createConfettiPieces() {
 function ConfettiPiece({ piece }: { piece: ConfettiPieceData }) {
   return (
     <div
-      className="fixed w-2.5 h-2.5 rounded-sm z-50 pointer-events-none"
+      className="pointer-events-none fixed z-50 h-2.5 w-2.5 rounded-sm"
       style={{
         left: `${piece.left}%`,
         top: '-10px',
@@ -44,9 +43,9 @@ function ConfettiPiece({ piece }: { piece: ConfettiPieceData }) {
 }
 
 function getDeliveryDate() {
-  const d = new Date();
-  d.setDate(d.getDate() + 4);
-  return d.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' });
+  const date = new Date();
+  date.setDate(date.getDate() + 4);
+  return date.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
 export default function SuccessPage() {
@@ -58,15 +57,19 @@ export default function SuccessPage() {
   const [confettiPieces] = useState(createConfettiPieces);
 
   useEffect(() => {
-    const id = generateOrderId();
-    setOrderId(id);
-    setTimeout(() => setShowContent(true), 400);
+    const orderTimer = setTimeout(() => {
+      const generatedId = generateOrderId();
+      setOrderId(generatedId);
+    }, 0);
+    const revealTimer = setTimeout(() => setShowContent(true), 400);
 
-    // Clear cart after a delay so the eco impact can still use the data briefly
-    const timer = setTimeout(() => clearCart(), 2000);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const clearTimer = setTimeout(() => clearCart(), 2000);
+    return () => {
+      clearTimeout(orderTimer);
+      clearTimeout(revealTimer);
+      clearTimeout(clearTimer);
+    };
+  }, [generateOrderId, clearCart]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(orderId);
@@ -75,77 +78,77 @@ export default function SuccessPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center relative overflow-hidden">
-      {/* Confetti */}
+    <div className="container relative mx-auto flex flex-grow items-center justify-center overflow-hidden px-4 py-12">
       {confettiPieces.map((piece) => (
         <ConfettiPiece key={piece.id} piece={piece} />
       ))}
 
-      <div className={`max-w-lg w-full space-y-6 transition-all duration-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        {/* Success Card */}
-        <div className="glass-card p-8 md:p-10 text-center rounded-3xl">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-200 animate-bounceIn">
-            <PartyPopper className="w-10 h-10" />
+      <div className={`w-full max-w-xl space-y-6 transition-all duration-700 ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+        <div className="glass-card rounded-3xl p-8 text-center md:p-10">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-200 animate-bounceIn">
+            <PartyPopper className="h-10 w-10" />
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-extrabold text-green-900 mb-3 tracking-tight">
-            Order Successful! 🎉
-          </h1>
-          <p className="text-gray-500 text-base mb-6">
-            Thank you for choosing a sustainable lifestyle. Your eco-friendly products are on their way!
+          <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-green-900 md:text-4xl">Order Successful</h1>
+          <p className="mb-6 text-base text-gray-500">
+            Thanks for choosing sustainable products. Your order is confirmed and being prepared for dispatch.
           </p>
 
-          {/* Order ID */}
           {orderId && (
-            <div className="bg-green-50 rounded-xl p-4 mb-6 animate-fadeInUp delay-200">
-              <p className="text-xs text-gray-500 mb-1">Order ID</p>
+            <div className="mb-6 rounded-xl bg-green-50 p-4 animate-fadeInUp delay-200">
+              <p className="mb-1 text-xs text-gray-500">Order ID</p>
               <div className="flex items-center justify-center gap-2">
-                <code className="font-mono font-bold text-green-800 text-lg tracking-wider">{orderId}</code>
-                <button onClick={handleCopy} className="p-1.5 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-100 transition-colors">
-                  {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                <code className="text-lg font-bold tracking-wider text-green-800">{orderId}</code>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-green-100 hover:text-green-600"
+                >
+                  {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                 </button>
               </div>
             </div>
           )}
 
-          {/* Delivery Timeline */}
-          <div className="grid grid-cols-2 gap-3 mb-6 animate-fadeInUp delay-300">
-            <div className="bg-white/60 rounded-xl p-3 border border-green-50">
-              <Package className="w-5 h-5 text-green-500 mx-auto mb-1.5" />
+          <div className="mb-6 grid grid-cols-2 gap-3 animate-fadeInUp delay-300">
+            <div className="rounded-xl border border-green-50 bg-white/60 p-3">
+              <Package className="mx-auto mb-1.5 h-5 w-5 text-green-500" />
               <p className="text-[10px] text-gray-400">Status</p>
               <p className="text-sm font-semibold text-gray-800">Confirmed</p>
             </div>
-            <div className="bg-white/60 rounded-xl p-3 border border-green-50">
-              <Calendar className="w-5 h-5 text-green-500 mx-auto mb-1.5" />
+            <div className="rounded-xl border border-green-50 bg-white/60 p-3">
+              <Calendar className="mx-auto mb-1.5 h-5 w-5 text-green-500" />
               <p className="text-[10px] text-gray-400">Expected By</p>
               <p className="text-sm font-semibold text-gray-800">{getDeliveryDate()}</p>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/"
-              className="inline-flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 font-semibold py-3 px-6 rounded-xl transition-all text-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-50 px-6 py-3 text-sm font-semibold text-green-700 transition-all hover:bg-green-100"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
               Continue Shopping
             </Link>
             <button
+              type="button"
               onClick={() => {
                 if (navigator.share) {
-                  navigator.share({ title: 'Ecoyaan Order', text: `I just placed an eco-friendly order on Ecoyaan! 🌱 Order ID: ${orderId}` });
+                  navigator.share({
+                    title: 'Ecoyaan Order',
+                    text: `I placed an eco-friendly order on Ecoyaan. Order ID: ${orderId}`,
+                  });
                 }
               }}
-              className="inline-flex items-center justify-center gap-2 bg-white text-gray-600 hover:bg-gray-50 font-semibold py-3 px-6 rounded-xl border border-gray-200 transition-all text-sm"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-600 transition-all hover:bg-gray-50"
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="h-4 w-4" />
               Share
             </button>
           </div>
         </div>
 
-        {/* Eco Impact */}
         <div className="animate-fadeInUp delay-500">
           <EcoImpact subtotal={800} variant="card" />
         </div>
