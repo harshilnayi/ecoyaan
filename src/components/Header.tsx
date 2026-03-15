@@ -3,17 +3,11 @@
 import Link from 'next/link';
 import { Leaf, ShoppingCart } from 'lucide-react';
 import { useCheckoutStore } from '@/store/checkoutStore';
-import { useEffect, useState } from 'react';
 
 export function Header() {
   const cartItems = useCheckoutStore((state) => state.cartItems);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const totalItems = mounted ? cartItems.reduce((acc, item) => acc + item.quantity, 0) : 0;
+  const isHydrated = useCheckoutStore((state) => state.isHydrated);
+  const totalItems = isHydrated ? cartItems.reduce((acc, item) => acc + item.quantity, 0) : 0;
 
   return (
     <header className="sticky top-0 z-50 w-full glass-card border-b border-green-100/60">
