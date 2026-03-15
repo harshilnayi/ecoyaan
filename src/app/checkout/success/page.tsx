@@ -1,21 +1,43 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PartyPopper, ArrowLeft, Package, Calendar, Share2, Copy, Check } from 'lucide-react';
 import { useCheckoutStore } from '@/store/checkoutStore';
 import { EcoImpact } from '@/components/EcoImpact';
 
-function ConfettiPiece({ delay, left, color }: { delay: number; left: number; color: string }) {
+interface ConfettiPieceData {
+  id: number;
+  delay: number;
+  left: number;
+  color: string;
+  duration: number;
+  rotation: number;
+}
+
+function createConfettiPieces() {
+  const colors = ['#22c55e', '#16a34a', '#4ade80', '#86efac', '#fbbf24', '#f59e0b', '#34d399', '#10b981'];
+
+  return Array.from({ length: 40 }, (_, index) => ({
+    id: index,
+    delay: Math.random() * 0.5,
+    left: Math.random() * 100,
+    color: colors[index % colors.length],
+    duration: 2 + Math.random(),
+    rotation: Math.random() * 360,
+  }));
+}
+
+function ConfettiPiece({ piece }: { piece: ConfettiPieceData }) {
   return (
     <div
       className="fixed w-2.5 h-2.5 rounded-sm z-50 pointer-events-none"
       style={{
-        left: `${left}%`,
+        left: `${piece.left}%`,
         top: '-10px',
-        backgroundColor: color,
-        animation: `confettiDrop ${2 + Math.random()}s ease-in ${delay}s forwards`,
-        transform: `rotate(${Math.random() * 360}deg)`,
+        backgroundColor: piece.color,
+        animation: `confettiDrop ${piece.duration}s ease-in ${piece.delay}s forwards`,
+        transform: `rotate(${piece.rotation}deg)`,
       }}
     />
   );
@@ -33,17 +55,7 @@ export default function SuccessPage() {
   const [orderId, setOrderId] = useState('');
   const [copied, setCopied] = useState(false);
   const [showContent, setShowContent] = useState(false);
-
-  // Generate confetti data once
-  const confettiPieces = useMemo(() => {
-    const colors = ['#22c55e', '#16a34a', '#4ade80', '#86efac', '#fbbf24', '#f59e0b', '#34d399', '#10b981'];
-    return Array.from({ length: 40 }, (_, i) => ({
-      id: i,
-      delay: Math.random() * 0.5,
-      left: Math.random() * 100,
-      color: colors[i % colors.length],
-    }));
-  }, []);
+  const [confettiPieces] = useState(createConfettiPieces);
 
   useEffect(() => {
     const id = generateOrderId();
@@ -66,7 +78,7 @@ export default function SuccessPage() {
     <div className="container mx-auto px-4 py-12 flex-grow flex items-center justify-center relative overflow-hidden">
       {/* Confetti */}
       {confettiPieces.map((piece) => (
-        <ConfettiPiece key={piece.id} delay={piece.delay} left={piece.left} color={piece.color} />
+        <ConfettiPiece key={piece.id} piece={piece} />
       ))}
 
       <div className={`max-w-lg w-full space-y-6 transition-all duration-700 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>

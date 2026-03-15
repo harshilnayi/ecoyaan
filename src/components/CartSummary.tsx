@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Shield, Truck, Package, Calendar, Tag } from 'lucide-react';
+import { ArrowRight, Shield, Truck, Package, Calendar } from 'lucide-react';
 import { useCheckoutStore } from '@/store/checkoutStore';
 import CouponInput from '@/components/CouponInput';
 

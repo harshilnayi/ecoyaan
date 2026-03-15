@@ -9,7 +9,7 @@ export interface CartItem {
   image: string;
 }
 
-export interface ShippingAddress {
+export interface ShippingAddressInput {
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -19,11 +19,17 @@ export interface ShippingAddress {
   state: string;
 }
 
+export interface ShippingAddress extends ShippingAddressInput {
+  id: string;
+}
+
 export interface CheckoutState {
   cartItems: CartItem[];
   shippingFee: number;
   discountApplied: number;
-  shippingAddress: ShippingAddress | null;
+  shippingAddresses: ShippingAddress[];
+  selectedShippingAddressId: string | null;
+  shippingDraft: ShippingAddressInput;
   couponCode: string;
   couponDiscount: number;
   isHydrated: boolean;
@@ -31,7 +37,13 @@ export interface CheckoutState {
 
   // Actions
   setCartData: (items: CartItem[], fee: number, discount: number) => void;
-  setShippingAddress: (address: ShippingAddress) => void;
+  upsertShippingAddress: (address: ShippingAddressInput, addressId?: string) => string;
+  selectShippingAddress: (addressId: string) => void;
+  clearSelectedShippingAddress: () => void;
+  removeShippingAddress: (addressId: string) => void;
+  setShippingDraft: (address: Partial<ShippingAddressInput>) => void;
+  clearShippingDraft: () => void;
+  getSelectedShippingAddress: () => ShippingAddress | null;
   updateQuantity: (productId: number, delta: number) => void;
   removeItem: (productId: number) => void;
   applyCoupon: (code: string) => { success: boolean; message: string };
@@ -48,13 +60,41 @@ const VALID_COUPONS: Record<string, number> = {
   'NATURE25': 25,
 };
 
+const EMPTY_SHIPPING_DRAFT: ShippingAddressInput = {
+  fullName: '',
+  email: '',
+  phoneNumber: '',
+  addressLine: '',
+  pinCode: '',
+  city: '',
+  state: '',
+};
+
+function createAddressId() {
+  return `addr_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function normalizeAddress(address: ShippingAddressInput): ShippingAddressInput {
+  return {
+    fullName: address.fullName.trim(),
+    email: address.email.trim(),
+    phoneNumber: address.phoneNumber.trim(),
+    addressLine: address.addressLine.trim(),
+    pinCode: address.pinCode.trim(),
+    city: address.city.trim(),
+    state: address.state.trim(),
+  };
+}
+
 export const useCheckoutStore = create<CheckoutState>()(
   persist(
     (set, get) => ({
       cartItems: [],
       shippingFee: 0,
       discountApplied: 0,
-      shippingAddress: null,
+      shippingAddresses: [],
+      selectedShippingAddressId: null,
+      shippingDraft: EMPTY_SHIPPING_DRAFT,
       couponCode: '',
       couponDiscount: 0,
       isHydrated: false,
@@ -63,7 +103,101 @@ export const useCheckoutStore = create<CheckoutState>()(
       setCartData: (items, fee, discount) =>
         set({ cartItems: items, shippingFee: fee, discountApplied: discount }),
 
-      setShippingAddress: (address) => set({ shippingAddress: address }),
+      upsertShippingAddress: (address, addressId) => {
+        const normalizedAddress = normalizeAddress(address);
+        const id = addressId ?? createAddressId();
+
+        set((state) => {
+          const existingIndex = state.shippingAddresses.findIndex((item) => item.id === id);
+
+          if (existingIndex >= 0) {
+            const updatedAddresses = [...state.shippingAddresses];
+            updatedAddresses[existingIndex] = { id, ...normalizedAddress };
+            return {
+              shippingAddresses: updatedAddresses,
+              selectedShippingAddressId: id,
+              shippingDraft: normalizedAddress,
+            };
+          }
+
+          return {
+            shippingAddresses: [{ id, ...normalizedAddress }, ...state.shippingAddresses],
+            selectedShippingAddressId: id,
+            shippingDraft: normalizedAddress,
+          };
+        });
+
+        return id;
+      },
+
+      selectShippingAddress: (addressId) => {
+        const selectedAddress = get().shippingAddresses.find((address) => address.id === addressId);
+        if (!selectedAddress) {
+          return;
+        }
+
+        set({
+          selectedShippingAddressId: addressId,
+          shippingDraft: {
+            fullName: selectedAddress.fullName,
+            email: selectedAddress.email,
+            phoneNumber: selectedAddress.phoneNumber,
+            addressLine: selectedAddress.addressLine,
+            pinCode: selectedAddress.pinCode,
+            city: selectedAddress.city,
+            state: selectedAddress.state,
+          },
+        });
+      },
+
+      clearSelectedShippingAddress: () => set({ selectedShippingAddressId: null }),
+
+      removeShippingAddress: (addressId) => {
+        const currentState = get();
+        const remainingAddresses = currentState.shippingAddresses.filter((address) => address.id !== addressId);
+
+        if (currentState.selectedShippingAddressId !== addressId) {
+          set({ shippingAddresses: remainingAddresses });
+          return;
+        }
+
+        const fallbackAddress = remainingAddresses[0] ?? null;
+        set({
+          shippingAddresses: remainingAddresses,
+          selectedShippingAddressId: fallbackAddress?.id ?? null,
+          shippingDraft: fallbackAddress
+            ? {
+                fullName: fallbackAddress.fullName,
+                email: fallbackAddress.email,
+                phoneNumber: fallbackAddress.phoneNumber,
+                addressLine: fallbackAddress.addressLine,
+                pinCode: fallbackAddress.pinCode,
+                city: fallbackAddress.city,
+                state: fallbackAddress.state,
+              }
+            : EMPTY_SHIPPING_DRAFT,
+        });
+      },
+
+      setShippingDraft: (address) => {
+        set((state) => ({
+          shippingDraft: {
+            ...state.shippingDraft,
+            ...address,
+          },
+        }));
+      },
+
+      clearShippingDraft: () => set({ shippingDraft: EMPTY_SHIPPING_DRAFT }),
+
+      getSelectedShippingAddress: () => {
+        const { shippingAddresses, selectedShippingAddressId } = get();
+        if (!selectedShippingAddressId) {
+          return null;
+        }
+
+        return shippingAddresses.find((address) => address.id === selectedShippingAddressId) ?? null;
+      },
 
       updateQuantity: (productId, delta) => {
         const { cartItems } = get();
@@ -106,7 +240,6 @@ export const useCheckoutStore = create<CheckoutState>()(
           cartItems: [],
           shippingFee: 0,
           discountApplied: 0,
-          shippingAddress: null,
           couponCode: '',
           couponDiscount: 0,
           orderId: null,
@@ -114,6 +247,31 @@ export const useCheckoutStore = create<CheckoutState>()(
     }),
     {
       name: 'ecoyaan-checkout-storage',
+      version: 2,
+      migrate: (persistedState, version) => {
+        const state = persistedState as Partial<
+          CheckoutState & { shippingAddress?: ShippingAddressInput | null }
+        >;
+
+        if (version < 2 && state?.shippingAddress) {
+          const migratedId = createAddressId();
+          const migratedAddress = normalizeAddress(state.shippingAddress);
+
+          return {
+            ...state,
+            shippingAddresses: [{ id: migratedId, ...migratedAddress }],
+            selectedShippingAddressId: migratedId,
+            shippingDraft: migratedAddress,
+          };
+        }
+
+        return {
+          ...state,
+          shippingAddresses: state?.shippingAddresses ?? [],
+          selectedShippingAddressId: state?.selectedShippingAddressId ?? null,
+          shippingDraft: state?.shippingDraft ?? EMPTY_SHIPPING_DRAFT,
+        };
+      },
       onRehydrateStorage: () => (state) => {
         state?.setHydrated();
       },
