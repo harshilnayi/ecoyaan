@@ -32,9 +32,9 @@ export default function CouponInput() {
 
   if (couponCode) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center justify-between">
+      <div className="flex items-center justify-between rounded-xl border border-green-200 bg-green-50 p-3">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
             <Check className="w-3.5 h-3.5 text-white" />
           </div>
           <div>
@@ -64,12 +64,12 @@ export default function CouponInput() {
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             onKeyDown={(e) => e.key === 'Enter' && handleApply()}
             placeholder="Coupon code"
-            className="w-full pl-9 pr-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all"
+            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 pl-9 text-sm outline-none transition-all focus:border-green-500 focus:ring-2 focus:ring-green-100"
           />
         </div>
         <button
           onClick={handleApply}
-          className="px-4 py-2.5 bg-green-50 text-green-700 text-sm font-semibold rounded-xl hover:bg-green-100 transition-colors border border-green-200"
+          className="rounded-xl border border-green-200 bg-green-50 px-4 py-2.5 text-sm font-semibold text-green-700 transition-colors hover:bg-green-100"
         >
           Apply
         </button>
@@ -79,7 +79,7 @@ export default function CouponInput() {
           {message}
         </p>
       )}
-      <p className="text-[10px] text-gray-400">Try: ECO10, GREEN20, EARTH15, NATURE25</p>
+      <p className="text-[10px] text-gray-400">Try ECO10, GREEN20, EARTH15, NATURE25</p>
     </div>
   );
 }

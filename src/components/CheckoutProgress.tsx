@@ -14,13 +14,11 @@ const steps = [
 
 export function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
   return (
-    <div className="w-full max-w-lg mx-auto mb-8 md:mb-12">
-      <div className="flex items-center justify-between relative">
-        {/* Progress Line Background */}
-        <div className="absolute top-5 left-[10%] right-[10%] h-0.5 bg-gray-200 z-0" />
-        {/* Progress Line Active */}
+    <div className="mx-auto mb-8 w-full max-w-lg md:mb-12">
+      <div className="relative flex items-center justify-between">
+        <div className="absolute left-[10%] right-[10%] top-5 z-0 h-0.5 bg-gray-200" />
         <div
-          className="absolute top-5 left-[10%] h-0.5 bg-green-500 z-0 transition-all duration-700 ease-out"
+          className="absolute left-[10%] top-5 z-0 h-0.5 bg-green-500 transition-all duration-700 ease-out"
           style={{
             width: `${((currentStep - 1) / (steps.length - 1)) * 80}%`,
           }}
@@ -32,15 +30,15 @@ export function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
           const Icon = step.icon;
 
           return (
-            <div key={step.id} className="flex flex-col items-center relative z-10">
+            <div key={step.id} className="relative z-10 flex flex-col items-center">
               <div
                 className={`
-                  w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
+                  flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-500
                   ${isCompleted
-                    ? 'bg-green-500 text-white shadow-md shadow-green-200'
+                    ? 'border-green-500 bg-green-500 text-white shadow-md shadow-green-200'
                     : isActive
-                      ? 'bg-green-600 text-white shadow-lg shadow-green-200 animate-progressPulse'
-                      : 'bg-white text-gray-400 border-2 border-gray-200'
+                      ? 'animate-progressPulse border-green-600 bg-green-600 text-white shadow-lg shadow-green-200'
+                      : 'border-gray-200 bg-white text-gray-400'
                   }
                 `}
               >
@@ -50,11 +48,10 @@ export function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
                   <Icon className="w-4 h-4" />
                 )}
               </div>
-              <span
-                className={`
-                  mt-2 text-xs font-semibold tracking-wide transition-colors duration-300
-                  ${isCompleted || isActive ? 'text-green-700' : 'text-gray-400'}
-                `}
+                <span
+                className={`mt-2 text-xs font-semibold tracking-wide transition-colors duration-300 ${
+                  isCompleted || isActive ? 'text-green-700' : 'text-gray-400'
+                }`}
               >
                 {step.label}
               </span>

@@ -14,7 +14,6 @@ export default function CartActions({ productId, initialQuantity }: CartActionsP
   const removeItem = useCheckoutStore((state) => state.removeItem);
   const cartItems = useCheckoutStore((state) => state.cartItems);
 
-  // Get the live quantity from the store, fallback to initial
   const liveItem = cartItems.find((item) => item.product_id === productId);
   const quantity = liveItem?.quantity ?? initialQuantity;
 
@@ -27,18 +26,18 @@ export default function CartActions({ productId, initialQuantity }: CartActionsP
 
   return (
     <div className={`flex items-center gap-2 transition-opacity duration-300 ${isRemoving ? 'opacity-0' : 'opacity-100'}`}>
-      <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200">
+      <div className="flex items-center rounded-xl border border-green-100 bg-gradient-to-r from-green-50 to-white">
         <button
           onClick={() => updateQuantity(productId, -1)}
-          className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-l-xl transition-colors"
+          className="rounded-l-xl p-2.5 text-gray-500 transition-colors hover:bg-green-100 hover:text-green-700"
           aria-label="Decrease quantity"
         >
           <Minus className="w-4 h-4" />
         </button>
-        <span className="w-8 text-center font-semibold text-gray-800 text-sm">{quantity}</span>
+        <span className="w-9 text-center text-sm font-semibold text-gray-800">{quantity}</span>
         <button
           onClick={() => updateQuantity(productId, 1)}
-          className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-r-xl transition-colors"
+          className="rounded-r-xl p-2.5 text-gray-500 transition-colors hover:bg-green-100 hover:text-green-700"
           aria-label="Increase quantity"
         >
           <Plus className="w-4 h-4" />
@@ -46,7 +45,7 @@ export default function CartActions({ productId, initialQuantity }: CartActionsP
       </div>
       <button
         onClick={handleRemove}
-        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+        className="rounded-xl p-2 text-gray-300 transition-all hover:bg-red-50 hover:text-red-500"
         aria-label="Remove item"
       >
         <Trash2 className="w-4 h-4" />

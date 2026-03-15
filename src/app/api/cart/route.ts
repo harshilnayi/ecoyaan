@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  // Mock data as requested in the assignment
   const data = {
     cartItems: [
       {
@@ -23,7 +22,6 @@ export async function GET() {
     discount_applied: 0
   };
 
-  // Simulate slight network delay
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   return NextResponse.json(data);
